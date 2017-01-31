@@ -68,6 +68,8 @@ public class Bitmap {
             input.seek(0);
             byte signatureByteArray[] = new byte[2];
             input.read(signatureByteArray);
+            System.out.println((char) signatureByteArray[0]);
+            System.out.println((char) signatureByteArray[1]);
             
             input.seek(2);
             byte fileSizeByteArray[] = new byte[4];
@@ -119,4 +121,14 @@ public class Bitmap {
         return returnValue;
     }
     
+    public void setRGB(int column, int row, int values[]) {
+        // WRITE CODE FOR THIS ONE
+        // values is an array containing R, G, B values
+    }
+    
+    public void writeBitmap(String filename) {
+        // WRITE CODE FOR THIS ONE
+        // save the current bitmap object as a .bmp file on your computer
+        // view it with any image viewer
+    }
 }
