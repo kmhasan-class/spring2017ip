@@ -30,7 +30,7 @@ public class OpenCVDemo {
         Mat image = Imgcodecs.imread("lena.png");
         double values[] = {0, 0, 0};
         for (int i = 0; i < image.height(); i++)
-            for (int j = 0; j < image.width() / 2; j++) {
+            for (int j = 0; j < image.width(); j++) {
                 values = image.get(i, j);
                 double average = (values[0] + values[1] + values[2]) / 3.0;
                 values[0] = average;
