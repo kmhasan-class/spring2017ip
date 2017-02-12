@@ -21,32 +21,64 @@ import org.opencv.videoio.VideoCapture;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
+import javafx.stage.Stage;
+
 /**
  *
  * @author kmhasan
  */
 public class CameraViewController implements Initializable {
-    
+
     @FXML
     private ImageView imageView;
     private VideoCapture videoCapture;
+    private Mat frame;
+    private Mat frame1, frame2;
+    private Image image;
+    private Image image1, image2;
+
+    @FXML
+    private Label statusLabel;
+    @FXML
+    private ImageView frame1View;
+    @FXML
+    private ImageView frame2View;
+    @FXML
+    private ImageView resultView;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         videoCapture = new VideoCapture();
         videoCapture.open(0);
-        captureFrame();
-//        videoCapture.release();
-    }    
+        showFrame();
+        statusLabel.setText("Started camera");
+        CameraDemo.getMainStage().setOnCloseRequest(e -> {videoCapture.release(); Platform.exit();});
+    }
 
-    private void captureFrame() {
-        Mat frame = new Mat();
-        videoCapture.read(frame);
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".png", frame, matOfByte);
-        Image image = new Image(new ByteArrayInputStream(matOfByte.toArray()));
-        imageView.setImage(image);
+    private void showFrame() {
+        frame = new Mat();
+        frame1 = new Mat();
+        frame2 = new Mat();
         
+        Runnable frameGrabber = () -> {
+            videoCapture.read(frame);
+            MatOfByte matOfByte = new MatOfByte();
+            Imgcodecs.imencode(".png", frame, matOfByte);
+            image = new Image(new ByteArrayInputStream(matOfByte.toArray()));
+            Platform.runLater(() -> imageView.setImage(image));
+        };
+        
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
+    }
+
+    @FXML
+    private void saveFrame() {
         LocalDate localDate = LocalDate.now();
         LocalTime localTime = LocalTime.now();
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("ddMMyyyy_");
@@ -54,11 +86,9 @@ public class CameraViewController implements Initializable {
         String filename = localDate.format(dateFormatter) + "_" + localTime.format(timeFormatter) + ".png";
         Imgcodecs.imwrite(filename, frame);
     }
-    
+
     @FXML
-    private void handleImageCaptureAction(ActionEvent event) {
-        System.out.println("Capturing a frame");
-        captureFrame();
+    private void saveSuccessiveFrames(ActionEvent event) {
     }
-    
+
 }

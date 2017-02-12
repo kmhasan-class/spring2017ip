@@ -17,14 +17,26 @@ import org.opencv.core.Core;
  * @author kmhasan
  */
 public class CameraDemo extends Application {
+    private static Stage mainStage;
+    
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    public static Stage getMainStage() {
+        return mainStage;
+    }
+
+    public static void setMainStage(Stage aMainStage) {
+        mainStage = aMainStage;
     }
     
     @Override
     public void start(Stage stage) throws Exception {
+        this.setMainStage(stage);
         System.out.println(Core.VERSION);
         Parent root = FXMLLoader.load(getClass().getResource("CameraView.fxml"));
+        stage.setTitle("OpenCV Camera Demo");
         
         Scene scene = new Scene(root);
         
