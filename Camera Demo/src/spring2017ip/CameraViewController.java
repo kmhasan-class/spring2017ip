@@ -50,16 +50,19 @@ public class CameraViewController implements Initializable {
     private ImageView frame2View;
     @FXML
     private ImageView resultView;
+    private ScheduledExecutorService executorService;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        executorService = Executors.newSingleThreadScheduledExecutor();
+
         videoCapture = new VideoCapture();
         videoCapture.open(0);
         showFrame();
         statusLabel.setText("Started camera");
         CameraDemo.getMainStage().setOnCloseRequest(e -> {
             videoCapture.release();
-            CameraDemo.getExecutorService().shutdownNow();
+            executorService.shutdownNow();
             Platform.exit();
         });
     }
@@ -82,9 +85,7 @@ public class CameraViewController implements Initializable {
             });
         };
         
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        CameraDemo.setExecutorService(executorService);
-        executorService.scheduleAtFixedRate(frameGrabber, 0, 500, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(frameGrabber, 0, 10, TimeUnit.MILLISECONDS);
     }
 
     @FXML
