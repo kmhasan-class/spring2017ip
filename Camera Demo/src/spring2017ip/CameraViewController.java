@@ -57,7 +57,11 @@ public class CameraViewController implements Initializable {
         videoCapture.open(0);
         showFrame();
         statusLabel.setText("Started camera");
-        CameraDemo.getMainStage().setOnCloseRequest(e -> {videoCapture.release(); Platform.exit();});
+        CameraDemo.getMainStage().setOnCloseRequest(e -> {
+            videoCapture.release();
+            CameraDemo.getExecutorService().shutdownNow();
+            Platform.exit();
+        });
     }
 
     private void showFrame() {
@@ -70,11 +74,17 @@ public class CameraViewController implements Initializable {
             MatOfByte matOfByte = new MatOfByte();
             Imgcodecs.imencode(".png", frame, matOfByte);
             image = new Image(new ByteArrayInputStream(matOfByte.toArray()));
-            Platform.runLater(() -> imageView.setImage(image));
+            Platform.runLater(() -> {
+                imageView.setImage(image);
+                frame1View.setImage(image);
+                // add some code to ensure that we see
+                // the next frame in frame2View
+            });
         };
         
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.scheduleAtFixedRate(frameGrabber, 0, 33, TimeUnit.MILLISECONDS);
+        CameraDemo.setExecutorService(executorService);
+        executorService.scheduleAtFixedRate(frameGrabber, 0, 500, TimeUnit.MILLISECONDS);
     }
 
     @FXML

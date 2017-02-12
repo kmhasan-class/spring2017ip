@@ -5,6 +5,7 @@
  */
 package spring2017ip;
 
+import java.util.concurrent.ScheduledExecutorService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -18,6 +19,7 @@ import org.opencv.core.Core;
  */
 public class CameraDemo extends Application {
     private static Stage mainStage;
+    private static ScheduledExecutorService executorService;
     
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -49,6 +51,14 @@ public class CameraDemo extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public static ScheduledExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    public static void setExecutorService(ScheduledExecutorService executorService) {
+        executorService = executorService;
     }
     
 }
