@@ -51,7 +51,7 @@ public class CameraViewController implements Initializable {
     @FXML
     private ImageView resultView;
     private ScheduledExecutorService executorService;
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         executorService = Executors.newSingleThreadScheduledExecutor();
@@ -67,24 +67,36 @@ public class CameraViewController implements Initializable {
         });
     }
 
+    private Image matToImage(Mat mat) {
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".png", mat, matOfByte);
+        Image newImage = new Image(new ByteArrayInputStream(matOfByte.toArray()));
+        return newImage;
+    }
+
+    private Mat rgbToGray(Mat input) {
+        Mat output = null;
+        // write your code to convert a RGB Mat to Gray Mat
+        return output;
+    }
+    
     private void showFrame() {
         frame = new Mat();
         frame1 = new Mat();
-        frame2 = new Mat();
-        
+        frame2 = frame1.clone();
+
         Runnable frameGrabber = () -> {
             videoCapture.read(frame);
-            MatOfByte matOfByte = new MatOfByte();
-            Imgcodecs.imencode(".png", frame, matOfByte);
-            image = new Image(new ByteArrayInputStream(matOfByte.toArray()));
+            image = matToImage(frame);
             Platform.runLater(() -> {
                 imageView.setImage(image);
                 frame1View.setImage(image);
+                //frame2View.setImage(matToImage(frame2));
                 // add some code to ensure that we see
                 // the next frame in frame2View
             });
         };
-        
+
         executorService.scheduleAtFixedRate(frameGrabber, 0, 10, TimeUnit.MILLISECONDS);
     }
 
