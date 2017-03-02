@@ -19,11 +19,11 @@ public class ConvolutionDemo {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
     
+    // handle the anchor!
     public Mat convolute(Mat inputImage, double kernel[][], double anchorX, double anchorY) {
         Mat outputImage = new Mat(inputImage.rows(), inputImage.cols(), inputImage.type());
         
-        // Task: write this convolution method that works for
-        // any image and any kernel
+        // fix this code so that it works for any sized kernel
         for (int i = 1; i < inputImage.rows() - 1; i++)
             for (int j = 1; j < inputImage.cols() - 1; j++) {
                 double sum = 0;
@@ -46,13 +46,14 @@ public class ConvolutionDemo {
         Mat image = Imgcodecs.imread("lena.png", Imgcodecs.IMREAD_GRAYSCALE);
         
         double kernel[][] = {
-            {1 / 9.0, 1 / 9.0, 1 / 9.0}, 
-            {1 / 9.0, 1 / 9.0, 1 / 9.0}, 
-            {1 / 9.0, 1 / 9.0, 1 / 9.0}
+            {-1 / 8.0, -2 / 8.0, -1 / 8.0}, 
+            {0 / 8.0, 0 / 8.0, 0 / 8.0}, 
+            {+1 / 8.0, +2 / 8.0, +1 / 8.0}
         };
         
         Mat outputImage = convolute(image, kernel, 1, 1);
         
+        Imgcodecs.imwrite("grayscale.png", image);
         Imgcodecs.imwrite("output.png", outputImage);
     }
     
