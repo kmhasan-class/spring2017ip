@@ -24,10 +24,20 @@ public class ConvolutionDemo {
         
         // Task: write this convolution method that works for
         // any image and any kernel
-        for (int i = 0; i < inputImage.rows(); i++)
-            for (int j = 0; j < inputImage.cols(); j++)
-                outputImage.put(i, j, 127.0);
-        
+        for (int i = 1; i < inputImage.rows() - 1; i++)
+            for (int j = 1; j < inputImage.cols() - 1; j++) {
+                double sum = 0;
+                
+                for (int r = 0; r < kernel.length; r++)
+                    for (int c = 0; c < kernel[r].length; c++) {
+                        double pixel[] = inputImage.get(i - kernel.length / 2 + r, 
+                                j - kernel[0].length / 2 + c);
+                        double product = kernel[r][c] * pixel[0];
+                        sum = sum + product;
+                    }
+                
+                outputImage.put(i, j, sum);
+            }
         return outputImage;
     }
     
