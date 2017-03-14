@@ -8,6 +8,7 @@ package spring2017ip;
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 /**
  *
@@ -41,9 +42,38 @@ public class ConvolutionDemo {
         return outputImage;
     }
     
+    public Mat doBlur(Mat inputImage) {
+        double kernel[][] = {
+            {1, 2, 1}, 
+            {2, 4, 2}, 
+            {1, 2, 1}
+        };
+        
+        for (int r = 0; r < kernel.length; r++)
+            for (int c = 0; c < kernel[r].length; c++)
+                kernel[r][c] /= 16.0;
+        
+        Mat output = convolute(inputImage, kernel, 1, 1);
+        return output;
+    }
+    
+    public Mat doCanny(Mat inputImage) {
+        Mat canny = null;
+        Mat blurred = doBlur(inputImage);
+        canny = blurred;
+        return canny;
+    }
+    
     public ConvolutionDemo() {
         System.out.println("Version " + Core.VERSION);
         Mat image = Imgcodecs.imread("lena.png", Imgcodecs.IMREAD_GRAYSCALE);
+
+        Mat canny = doCanny(image);
+        Imgcodecs.imwrite("canny.png", canny);
+//        Mat canny = Imgcodecs.imread("lena.png", Imgcodecs.IMREAD_GRAYSCALE);
+//        
+//        Imgproc.Canny(image, canny, 80, 240);
+//        Imgcodecs.imwrite("canny.png", canny);
         
         double kernel[][] = {
             {-1 / 8.0, -2 / 8.0, -1 / 8.0}, 
