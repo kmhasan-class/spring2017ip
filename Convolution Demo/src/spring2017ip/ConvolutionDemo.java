@@ -56,10 +56,27 @@ public class ConvolutionDemo {
         Mat output = convolute(inputImage, kernel, 1, 1);
         return output;
     }
+
+    public Mat doSobelGx(Mat inputImage) {
+        double kernel[][] = {
+            {-1, -2, -1}, 
+            {+0, +0, +0}, 
+            {+1, +2, +1}
+        };
+        
+        for (int r = 0; r < kernel.length; r++)
+            for (int c = 0; c < kernel[r].length; c++)
+                kernel[r][c] /= 8.0;
+        
+        Mat output = convolute(inputImage, kernel, 1, 1);
+        return output;
+    }
     
     public Mat doCanny(Mat inputImage) {
         Mat canny = null;
         Mat blurred = doBlur(inputImage);
+        Mat gx = doSobelGx(blurred);
+        Imgcodecs.imwrite("gx.png", gx);
         canny = blurred;
         return canny;
     }
@@ -74,7 +91,7 @@ public class ConvolutionDemo {
 //        
 //        Imgproc.Canny(image, canny, 80, 240);
 //        Imgcodecs.imwrite("canny.png", canny);
-        
+        /*
         double kernel[][] = {
             {-1 / 8.0, -2 / 8.0, -1 / 8.0}, 
             {0 / 8.0, 0 / 8.0, 0 / 8.0}, 
@@ -84,7 +101,7 @@ public class ConvolutionDemo {
         Mat outputImage = convolute(image, kernel, 1, 1);
         
         Imgcodecs.imwrite("grayscale.png", image);
-        Imgcodecs.imwrite("output.png", outputImage);
+        Imgcodecs.imwrite("output.png", outputImage);*/
     }
     
     /**
