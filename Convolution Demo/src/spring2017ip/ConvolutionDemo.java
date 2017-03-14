@@ -71,12 +71,43 @@ public class ConvolutionDemo {
         Mat output = convolute(inputImage, kernel, 1, 1);
         return output;
     }
+
+    public Mat doSobelGy(Mat inputImage) {
+        double kernel[][] = {
+            {-1, +0, +1}, 
+            {-2, +0, +2}, 
+            {-1, +0, +1}
+        };
+        
+        for (int r = 0; r < kernel.length; r++)
+            for (int c = 0; c < kernel[r].length; c++)
+                kernel[r][c] /= 8.0;
+        
+        Mat output = convolute(inputImage, kernel, 1, 1);
+        return output;
+    }
+    
+    public Mat combineGxGy(Mat gx, Mat gy) {
+        Mat outputImage = new Mat(gx.rows(), gx.cols(), gx.type());
+        for (int r = 0; r < gx.height(); r++)
+            for (int c = 0; c < gx.width(); c++) {
+                double x[] = gx.get(r, c);
+                double y[] = gy.get(r, c);
+                double m = Math.sqrt(x[0] * x[0] + y[0] * y[0]);
+                outputImage.put(r, c, m);
+            }
+        return outputImage;
+    }
     
     public Mat doCanny(Mat inputImage) {
         Mat canny = null;
         Mat blurred = doBlur(inputImage);
         Mat gx = doSobelGx(blurred);
+        Mat gy = doSobelGy(blurred);
+        Mat m = combineGxGy(gx, gy);
         Imgcodecs.imwrite("gx.png", gx);
+        Imgcodecs.imwrite("gy.png", gy);
+        Imgcodecs.imwrite("m.png", m);
         canny = blurred;
         return canny;
     }
