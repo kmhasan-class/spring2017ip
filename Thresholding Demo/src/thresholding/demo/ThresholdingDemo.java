@@ -42,6 +42,11 @@ public class ThresholdingDemo {
         double threshold = 127;
         double newThreshold = threshold;
         int iteration = 0;
+
+        int cf[] = new int[histogram.length];
+        int cwf[] = new int[histogram.length];
+        
+        // run a loop to fill out the entries of cf and cwf
         
         do {
             iteration++;
