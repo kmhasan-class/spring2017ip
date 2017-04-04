@@ -37,7 +37,7 @@ public class ThresholdingDemo {
     }
     
     // improved Basic Global Thresholding using Histograms
-    public static int improvedBGT(Mat inputImage) {
+    public static int furtherImprovedBGT(Mat inputImage) {
         int histogram[] = getHistogram(inputImage);
         double threshold = 127;
         double newThreshold = threshold;
@@ -47,7 +47,40 @@ public class ThresholdingDemo {
         int cwf[] = new int[histogram.length];
         
         // run a loop to fill out the entries of cf and cwf
+        cf[0] = histogram[0];
+        cwf[0] = histogram[0] * 0;
         
+        for (int i = 1; i < histogram.length; i++) {
+            cf[i] = cf[i - 1] + histogram[i];
+            cwf[i] = cwf[i - 1] + histogram[i] * i;
+        }
+        
+        do {
+            System.out.printf("Iteration %d Threshold %.3f\n", iteration, threshold);
+            iteration++;
+            threshold = newThreshold;
+            double g1sum = cf[(int) threshold];
+            int g1count = cwf[(int) threshold];
+            double g2sum = cf[histogram.length - 1] - g1sum;
+            int g2count = cwf[histogram.length - 1] - g1count;
+
+            double m1 = g1sum / g1count;
+            double m2 = g2sum / g2count;
+
+            newThreshold = (m1 + m2) / 2;
+        } while (Math.abs(threshold - newThreshold) > 1);
+        
+        System.out.println("Number of iterations: " + iteration);
+        return (int) newThreshold;
+    }
+    
+    // improved Basic Global Thresholding using Histograms
+    public static int improvedBGT(Mat inputImage) {
+        int histogram[] = getHistogram(inputImage);
+        double threshold = 127;
+        double newThreshold = threshold;
+        int iteration = 0;
+
         do {
             iteration++;
             threshold = newThreshold;
@@ -124,7 +157,8 @@ public class ThresholdingDemo {
         // epoch - January 1, 1970
         long startTime = System.currentTimeMillis();
         //int threshold = basicGlobalThresholding(inputImage);
-        int threshold = improvedBGT(inputImage);
+        //int threshold = improvedBGT(inputImage);
+        int threshold = furtherImprovedBGT(inputImage);
         long stopTime = System.currentTimeMillis();
         System.out.printf("Time taken for basic global thresholding: %.2f\n", (stopTime - startTime) / 1000.0);
         System.out.println("Threshold " + threshold);
