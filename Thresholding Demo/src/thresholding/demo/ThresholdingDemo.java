@@ -25,8 +25,8 @@ public class ThresholdingDemo {
         return outputImage;
     }
 
-    public static int[] getHistogram(Mat inputImage) {
-        int histogram[] = new int[256];
+    public static long[] getHistogram(Mat inputImage) {
+        long histogram[] = new long[256];
         for (int r = 0; r < inputImage.rows(); r++)
             for (int c = 0; c < inputImage.cols(); c++) {
                 double intensity[] = inputImage.get(r, c);
@@ -38,13 +38,13 @@ public class ThresholdingDemo {
     
     // improved Basic Global Thresholding using Histograms
     public static int furtherImprovedBGT(Mat inputImage) {
-        int histogram[] = getHistogram(inputImage);
+        long histogram[] = getHistogram(inputImage);
         double threshold = 127;
         double newThreshold = threshold;
         int iteration = 0;
 
-        int cf[] = new int[histogram.length];
-        int cwf[] = new int[histogram.length];
+        long cf[] = new long[histogram.length];
+        long cwf[] = new long[histogram.length];
         
         // run a loop to fill out the entries of cf and cwf
         cf[0] = histogram[0];
@@ -59,10 +59,10 @@ public class ThresholdingDemo {
             System.out.printf("Iteration %d Threshold %.3f\n", iteration, threshold);
             iteration++;
             threshold = newThreshold;
-            double g1sum = cf[(int) threshold];
-            int g1count = cwf[(int) threshold];
-            double g2sum = cf[histogram.length - 1] - g1sum;
-            int g2count = cwf[histogram.length - 1] - g1count;
+            double g1sum = cwf[(int) threshold];
+            long g1count = cf[(int) threshold];
+            double g2sum = cwf[histogram.length - 1] - g1sum;
+            long g2count = cf[histogram.length - 1] - g1count;
 
             double m1 = g1sum / g1count;
             double m2 = g2sum / g2count;
@@ -76,7 +76,7 @@ public class ThresholdingDemo {
     
     // improved Basic Global Thresholding using Histograms
     public static int improvedBGT(Mat inputImage) {
-        int histogram[] = getHistogram(inputImage);
+        long histogram[] = getHistogram(inputImage);
         double threshold = 127;
         double newThreshold = threshold;
         int iteration = 0;
@@ -157,8 +157,8 @@ public class ThresholdingDemo {
         // epoch - January 1, 1970
         long startTime = System.currentTimeMillis();
         //int threshold = basicGlobalThresholding(inputImage);
-        //int threshold = improvedBGT(inputImage);
-        int threshold = furtherImprovedBGT(inputImage);
+        int threshold = improvedBGT(inputImage);
+//        int threshold = furtherImprovedBGT(inputImage);
         long stopTime = System.currentTimeMillis();
         System.out.printf("Time taken for basic global thresholding: %.2f\n", (stopTime - startTime) / 1000.0);
         System.out.println("Threshold " + threshold);
