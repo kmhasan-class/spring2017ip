@@ -27,48 +27,71 @@ public class OtsusMethod {
 
     public static long[] getHistogram(Mat inputImage) {
         long histogram[] = new long[256];
-        for (int r = 0; r < inputImage.rows(); r++)
+        for (int r = 0; r < inputImage.rows(); r++) {
             for (int c = 0; c < inputImage.cols(); c++) {
                 double intensity[] = inputImage.get(r, c);
                 int value = (int) intensity[0];
                 histogram[value]++;
             }
+        }
         return histogram;
     }
-    
+
     public static int getOtsusTheshold(Mat inputImage) {
         long frequency[] = getHistogram(inputImage);
         double p[] = new double[frequency.length];
-        long totalPixels = inputImage.rows() *  inputImage.cols();
-        
-        for (int i = 0; i < frequency.length; i++)
-            p[i] = frequency[i] / ((double) totalPixels);
-        
-        int k = 50;
-        double m1k = 0;
-        double m2k = 0;
-        
-        double p1k = 0;
-        double p2k = 0;
-        for (int i = 0; i <= k; i++)
-            p1k += p[i];
-        p2k = 1 - p1k;
-        
-        for (int i = 0; i <= k; i++)
-            m1k += i * p[i];
-        m1k /= p1k;
+        long totalPixels = inputImage.rows() * inputImage.cols();
 
-        for (int i = k + 1; i < frequency.length; i++)
-            m2k += i * p[i];
-        m2k /= p2k;
-        
-        return 0;
-        
+        for (int i = 0; i < frequency.length; i++) {
+            p[i] = frequency[i] / ((double) totalPixels);
+        }
+
+            double mg = 0;
+            for (int i = 0; i < frequency.length; i++) {
+                mg += i * p[i];
+            }
+            mg /= 1;
+            
+        int threshold = 0;
+        double bestSigma = Double.MIN_VALUE;
+        for (int k = 0; k < frequency.length; k++) {
+            double m1k = 0;
+            double m2k = 0;
+
+            double p1k = 0;
+            double p2k = 0;
+            for (int i = 0; i <= k; i++) {
+                p1k += p[i];
+            }
+            p2k = 1 - p1k;
+
+            for (int i = 0; i <= k; i++) {
+                m1k += i * p[i];
+            }
+            m1k /= p1k;
+
+            for (int i = k + 1; i < frequency.length; i++) {
+                m2k += i * p[i];
+            }
+            m2k /= p2k;
+
+            // task: calculate sigma square b in a more efficient way
+            // test if your implementation is better
+            
+            // hometask: implement otsu's method through recursive computation
+            double sigmaSquareB = p1k * p2k * (m1k - m2k) * (m1k - m2k);
+            //System.out.printf("k: %d sigma: %.3f\n", k, sigmaSquareB);
+            if (sigmaSquareB > bestSigma) {
+                bestSigma = sigmaSquareB;
+                threshold = k;
+            }
+        }
+        return threshold;
     }
-    
+
     public static void main(String[] args) {
         Mat inputImage = Imgcodecs.imread("meat.jpg", Imgcodecs.IMREAD_GRAYSCALE);
-        
+
         // epoch - January 1, 1970
         long startTime = System.currentTimeMillis();
         int threshold = getOtsusTheshold(inputImage);
