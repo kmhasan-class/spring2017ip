@@ -46,20 +46,22 @@ public class OtsusMethod {
             p[i] = frequency[i] / ((double) totalPixels);
         }
 
-            double mg = 0;
-            for (int i = 0; i < frequency.length; i++) {
-                mg += i * p[i];
-            }
-            mg /= 1;
-            
+        double mg = 0;
+        for (int i = 0; i < frequency.length; i++) {
+            mg += i * p[i];
+        }
+        mg /= 1;
+
         int threshold = 0;
         double bestSigma = Double.MIN_VALUE;
         for (int k = 0; k < frequency.length; k++) {
             double m1k = 0;
             double m2k = 0;
-
+            double mk = 0;
+            
             double p1k = 0;
             double p2k = 0;
+            
             for (int i = 0; i <= k; i++) {
                 p1k += p[i];
             }
@@ -68,6 +70,7 @@ public class OtsusMethod {
             for (int i = 0; i <= k; i++) {
                 m1k += i * p[i];
             }
+            mk = m1k;
             m1k /= p1k;
 
             for (int i = k + 1; i < frequency.length; i++) {
@@ -77,10 +80,10 @@ public class OtsusMethod {
 
             // task: calculate sigma square b in a more efficient way
             // test if your implementation is better
-            
             // hometask: implement otsu's method through recursive computation
-            double sigmaSquareB = p1k * p2k * (m1k - m2k) * (m1k - m2k);
-            //System.out.printf("k: %d sigma: %.3f\n", k, sigmaSquareB);
+//            double sigmaSquareB = p1k * p2k * (m1k - m2k) * (m1k - m2k);
+            double sigmaSquareB = (mg * p1k - mk) * (mg * p1k - mk) / (p1k * p2k);
+//            System.out.printf("k: %d sigma: %.3f\n", k, sigmaSquareB);
             if (sigmaSquareB > bestSigma) {
                 bestSigma = sigmaSquareB;
                 threshold = k;
